@@ -240,7 +240,30 @@ param aks object
 // "sqldb": {
 //   "value": {
 //     "enabled": true,
-//     "username": "azadmin"
+//     "sqlAuthenticationUsername": "azadmin"
+//   }
+// }
+
+// example 2
+// "sqldb":{
+//   "value":{
+//     "enabled":true,
+//     "aadAuthenticationOnly":true,
+//     "aadLoginName":"John Smith",
+//     "aadLoginObjectID":"88888-888888-888888-888888",
+//     "aadLoginType":"User"
+//   }
+// }
+
+// example 3
+// "sqldb":{
+//   "value":{
+//     "enabled":true,
+//     "aadAuthenticationOnly":false,
+//     "sqlAuthenticationUsername": "azadmin",
+//     "aadLoginName":"John Smith",
+//     "aadLoginObjectID":"88888-888888-888888-888888",
+//     "aadLoginType":"User"
 //   }
 // }
 
@@ -248,7 +271,27 @@ param aks object
 // -----------------------------
 // {
 //   enabled: true
-//   username: 'azadmin'
+//   aadAuthenticationOnly: false 
+//   sqlAuthenticationUsername: 'azadmin'
+// }
+
+// Example (Bicep) 2
+// {
+//   enabled: true
+//   aadAuthenticationOnly: true 
+//   aadLoginName:'John Smith',
+//   aadLoginObjectID:'88888-888888-888888-888888',
+//   aadLoginType:'User'
+// }
+
+// Example (Bicep) 3
+// {
+//   enabled: true
+//   aadAuthenticationOnly: false
+//   sqlAuthenticationUsername: 'azadmin' 
+//   aadLoginName:'John Smith',
+//   aadLoginObjectID:'88888-888888-888888-888888',
+//   aadLoginType:'User'
 // }
 @description('SQL Database configuration.  Includes enabled flag and username.')
 param sqldb object
@@ -442,6 +485,13 @@ param hubNetwork object
 // }
 @description('Network configuration.  Includes peerToHubVirtualNetwork flag, useRemoteGateway flag, name, dnsServers, addressPrefixes and subnets (oz, paz, rz, hrz, privateEndpoints, sqlmi, databricksPublic, databricksPrivate, aks) ')
 param network object
+
+// Telemetry - Azure customer usage attribution
+// Reference:  https://docs.microsoft.com/azure/marketplace/azure-partner-customer-usage-attribution
+var telemetry = json(loadTextContent('../../config/telemetry.json'))
+module telemetryCustomerUsageAttribution '../../azresources/telemetry/customer-usage-attribution-subscription.bicep' = if (telemetry.customerUsageAttribution.enabled) {
+  name: 'pid-${telemetry.customerUsageAttribution.modules.archetypes.machineLearning}'
+}
 
 /*
   Scaffold the subscription which includes:
