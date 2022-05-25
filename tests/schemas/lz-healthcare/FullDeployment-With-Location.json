@@ -7,6 +7,8 @@
         },
         "serviceHealthAlerts": {
             "value": {
+<<<<<<< HEAD
+<<<<<<<< HEAD:tests/schemas/lz-healthcare/FullDeployment-With-Location.json
                 "resourceGroupName": "pubsec-service-health",
                 "incidentTypes": [
                     "Incident",
@@ -17,6 +19,11 @@
                     "Canada East",
                     "Canada Central"
                 ],
+========
+                "resourceGroupName": "service-health",
+                "incidentTypes": [ "Incident", "Security" ],
+                "regions": [ "Global", "Canada East", "Canada Central" ],
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/82f7705e-3386-427b-95b7-cbed91ab29a7_healthcare_canadacentral.json
                 "receivers": {
                     "app": [
                         "alzcanadapubsec@microsoft.com"
@@ -36,11 +43,21 @@
                             "phoneNumber": "5555555555"
                         }
                     ]
+=======
+                "resourceGroupName": "service-health",
+                "incidentTypes": [ "Incident", "Security" ],
+                "regions": [ "Global", "Canada East", "Canada Central" ],
+                "receivers": {
+                    "app": [ "alzcanadapubsec@microsoft.com" ],
+                    "email": [ "alzcanadapubsec@microsoft.com" ],
+                    "sms": [ { "countryCode": "1", "phoneNumber": "5555555555" } ],
+                    "voice": [ { "countryCode": "1", "phoneNumber": "5555555555" } ]
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
                 },
-                "actionGroupName": "Sub2 ALZ action group",
-                "actionGroupShortName": "sub2-alert",
-                "alertRuleName": "Sub2 ALZ alert rule",
-                "alertRuleDescription": "Alert rule for Azure Landing Zone"
+                "actionGroupName": "Service health action group",
+                "actionGroupShortName": "health-alert",
+                "alertRuleName": "Incidents and Security",
+                "alertRuleDescription": "Service Health: Incidents and Security"
             }
         },
         "securityCenter": {
@@ -93,8 +110,10 @@
                 "TechnicalContact": "technical-contact-tag"
             }
         },
+<<<<<<< HEAD
         "resourceGroups": {
             "value": {
+<<<<<<<< HEAD:tests/schemas/lz-healthcare/FullDeployment-With-Location.json
                 "automation": "healthAutomation",
                 "compute": "healthCompute",
                 "monitor": "healthMonitor",
@@ -102,6 +121,25 @@
                 "networkWatcher": "NetworkWatcherRG",
                 "security": "healthSecurity",
                 "storage": "healthStorage"
+========
+=======
+        "logAnalyticsWorkspaceResourceId": {
+            "value": "/subscriptions/bc0a4f9f-07fa-4284-b1bd-fbad38578d3a/resourcegroups/pubsec-central-logging/providers/microsoft.operationalinsights/workspaces/log-analytics-workspace"
+        },
+        "resourceGroups": {
+            "value": {
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
+                "automation": "health-automation",
+                "compute": "health-compute",
+                "monitor": "health-monitor",
+                "networking": "health-network",
+                "networkWatcher": "NetworkWatcherRG",
+                "security": "health-security",
+                "storage": "health-storage"
+<<<<<<< HEAD
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/82f7705e-3386-427b-95b7-cbed91ab29a7_healthcare_canadacentral.json
+=======
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
             }
         },
         "useCMK": {
@@ -114,39 +152,74 @@
         },
         "automation": {
             "value": {
+<<<<<<< HEAD
+<<<<<<<< HEAD:tests/schemas/lz-healthcare/FullDeployment-With-Location.json
                 "name": "healthautomation"
+========
+                "name": "automation"
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/82f7705e-3386-427b-95b7-cbed91ab29a7_healthcare_canadacentral.json
+=======
+                "name": "automation"
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
             }
         },
         "sqldb": {
             "value": {
                 "enabled": true,
+<<<<<<< HEAD
+<<<<<<<< HEAD:tests/schemas/lz-healthcare/FullDeployment-With-Location.json
+=======
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
                 "aadAuthenticationOnly": true,
                 "aadLoginName": "DBA Group",
                 "aadLoginObjectID": "4e4ea47c-ee21-4add-ad2f-a75d0d8014e0",
                 "aadLoginType": "Group"
+<<<<<<< HEAD
+========
+                "sqlAuthenticationUsername": "azadmin",
+                "aadAuthenticationOnly": false
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/82f7705e-3386-427b-95b7-cbed91ab29a7_healthcare_canadacentral.json
+=======
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
             }
         },
         "synapse": {
             "value": {
-                "username": "azadmin"
+<<<<<<< HEAD
+                "aadAuthenticationOnly": true,
+=======
+                "aadAuthenticationOnly": false,
+                "sqlAuthenticationUsername": "kubo",
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
+                "aadLoginName": "az.admins",
+                "aadLoginObjectID": "e0357d81-55d8-44e9-9d9c-ab09dc710785",
+                "aadLoginType": "Group"
             }
         },
         "hubNetwork": {
             "value": {
-                "virtualNetworkId": "/subscriptions/ed7f4eed-9010-4227-b115-2a5e37728f27/resourceGroups/pubsec-hub-networking-rg/providers/Microsoft.Network/virtualNetworks/hub-vnet",
+                "virtualNetworkId": "/subscriptions/ed7f4eed-9010-4227-b115-2a5e37728f27/resourceGroups/pubsec-hub-networking/providers/Microsoft.Network/virtualNetworks/hub-vnet",
                 "rfc1918IPRange": "10.18.0.0/22",
                 "rfc6598IPRange": "100.60.0.0/16",
                 "egressVirtualApplianceIp": "10.18.1.4",
                 "privateDnsManagedByHub": true,
                 "privateDnsManagedByHubSubscriptionId": "ed7f4eed-9010-4227-b115-2a5e37728f27",
-                "privateDnsManagedByHubResourceGroupName": "pubsec-dns-rg"
+                "privateDnsManagedByHubResourceGroupName": "pubsec-dns"
             }
         },
         "network": {
             "value": {
                 "peerToHubVirtualNetwork": true,
                 "useRemoteGateway": false,
+<<<<<<< HEAD
+<<<<<<<< HEAD:tests/schemas/lz-healthcare/FullDeployment-With-Location.json
                 "name": "healthvnet",
+========
+                "name": "health-vnet",
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/82f7705e-3386-427b-95b7-cbed91ab29a7_healthcare_canadacentral.json
+=======
+                "name": "health-vnet",
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
                 "dnsServers": [
                     "10.18.1.4"
                 ],
@@ -154,26 +227,6 @@
                     "10.5.0.0/16"
                 ],
                 "subnets": {
-                    "oz": {
-                        "comments": "Foundational Elements Zone (OZ)",
-                        "name": "oz",
-                        "addressPrefix": "10.5.1.0/25"
-                    },
-                    "paz": {
-                        "comments": "Presentation Zone (PAZ)",
-                        "name": "paz",
-                        "addressPrefix": "10.5.2.0/25"
-                    },
-                    "rz": {
-                        "comments": "Application Zone (RZ)",
-                        "name": "rz",
-                        "addressPrefix": "10.5.3.0/25"
-                    },
-                    "hrz": {
-                        "comments": "Data Zone (HRZ)",
-                        "name": "hrz",
-                        "addressPrefix": "10.5.4.0/25"
-                    },
                     "databricksPublic": {
                         "comments": "Databricks Public Delegated Subnet",
                         "name": "databrickspublic",
@@ -193,7 +246,38 @@
                         "comments": "Azure Web App Delegated Subnet",
                         "name": "webapp",
                         "addressPrefix": "10.5.8.0/25"
-                    }
+                    },
+<<<<<<< HEAD
+                    "optional": [
+                        {
+                            "comments": "Optional Subnet 1",
+                            "name": "virtualMachines",
+                            "addressPrefix": "10.5.9.0/25",
+                            "nsg": {
+                                "enabled": true
+                            },
+                            "udr": {
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "comments": "Optional Subnet 2 with delegation for NetApp Volumes",
+                            "name": "NetappVolumes",
+                            "addressPrefix": "10.5.10.0/25",
+                            "nsg": {
+                                "enabled": false
+                            },
+                            "udr": {
+                                "enabled": false
+                            },
+                            "delegations": {
+                                "serviceName": "Microsoft.NetApp/volumes"
+                            }
+                        }
+                    ]
+=======
+                    "optional": []
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
                 }
             }
         }

@@ -16,6 +16,8 @@
     - [Test Scenarios](#test-scenarios)
   - [Azure Deployment](#azure-deployment)
     - [Schema Definition](#schema-definition)
+    - [Delete Locks](#delete-locks)
+    - [Service Health](#service-health)
     - [Deployment Scenarios](#deployment-scenarios)
     - [Example Deployment Parameters](#example-deployment-parameters)
     - [Deployment Instructions](#deployment-instructions)
@@ -87,7 +89,6 @@ Subscription can be moved to a target Management Group through Azure ARM Templat
 | SQL Storage | Azure SQL Database - Fully managed cloud database engine | Optional – Customer Managed Keys | [Azure Docs](https://docs.microsoft.com/azure/azure-sql/database/sql-database-paas-overview) |
 | Key Management | Azure Key Vault - Centralized cloud storage of secrets and keys | Private Endpoint | [Azure Docs](https://docs.microsoft.com/azure/key-vault/general/overview)
 | Monitoring | Application Insights - Application performance and monitoring cloud service | - | [Azure Docs](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview)
-
 
 The intended cloud service workflows and data movements for this archetype include:
 
@@ -171,7 +172,6 @@ Since all traffic is redirected through the NVA / Firewall, the following destin
  | `dc.services.visualstudio.com` ; `*.ods.opinsights.azure.com` ; `*.oms.opinsights.azure.com` ; `*.monitoring.azure.com` ; `data.policy.core.windows.net` ; `store.policy.core.windows.net` | HTTPS | 443 | AKS Addons required FQDNs|
  | `security.ubuntu.com` ; `azure.archive.ubuntu.com` ; `changelogs.ubuntu.com` | HTTP | 80 | AKS Optional recommended FQDNs |
 
-
 ## Testing
 
 Test scripts are provided to verify end to end integration. These tests are not automated so minor modifications are needed to set up and run.
@@ -241,7 +241,7 @@ Reference implementation uses parameter files with `object` parameters to consol
     * [Subscription Budget](../../schemas/latest/landingzones/types/subscriptionBudget.json)
     * [Subscription Tags](../../schemas/latest/landingzones/types/subscriptionTags.json)
     * [Resource Tags](../../schemas/latest/landingzones/types/resourceTags.json)
-
+    * [Log Analytics Workspace](../../schemas/latest/landingzones/types/logAnalyticsWorkspaceId.json)
   * Spoke types
     * [Automation](../../schemas/latest/landingzones/types/automation.json)
     * [Hub Network](../../schemas/latest/landingzones/types/hubNetwork.json)
@@ -252,13 +252,28 @@ Reference implementation uses parameter files with `object` parameters to consol
     * [Azure SQL Database](../../schemas/latest/landingzones/types/sqldb.json)
     * [Azure SQL Managed Instances](../../schemas/latest/landingzones/types/sqlmi.json)
 
+### Delete Locks
+
+As an administrator, you can lock a subscription, resource group, or resource to prevent other users in your organization from accidentally deleting or modifying critical resources. The lock overrides any permissions the user might have.  You can set the lock level to `CanNotDelete` or `ReadOnly`.  Please see [Azure Docs](https://docs.microsoft.com/azure/azure-resource-manager/management/lock-resources) for more information.
+
+**This archetype does not use `CanNotDelete` nor `ReadOnly` locks as part of the deployment.  You may customize the deployment templates when it's required for your environment.**
+
+### Service Health
+
+[Service health notifications](https://docs.microsoft.com/azure/service-health/service-health-notifications-properties) are published by Azure, and contain information about the resources under your subscription.  Service health notifications can be informational or actionable, depending on the category.
+
+Our examples configure service health alerts for `Security` and `Incident`.  However, these categories can be customized based on your need.  Please review the possible options in [Azure Docs](https://docs.microsoft.com/azure/service-health/service-health-notifications-properties#details-on-service-health-level-information).
+
 ### Deployment Scenarios
+
+> Sample deployment scenarios are based on the latest JSON parameters file schema definition.  If you have an older version of this repository, please use the examples from your repository.
 
 | Scenario | Example JSON Parameters | Notes |
 |:-------- |:----------------------- |:----- |
 | Deployment with Hub Virtual Network | [tests/schemas/lz-machinelearning/FullDeployment-With-Hub.json](../../tests/schemas/lz-machinelearning/FullDeployment-With-Hub.json) | - |
 | Deployment with Location | [tests/schemas/lz-machinelearning/FullDeployment-With-Location.json](../../tests/schemas/lz-machinelearning/FullDeployment-With-Location.json) | `parameters.location.value` is `canadacentral` |
 | Deployment without Hub Virtual Network | [tests/schemas/lz-machinelearning/FullDeployment-Without-Hub.json](../../tests/schemas/lz-machinelearning/FullDeployment-Without-Hub.json) | `parameters.hubNetwork.value.*` fields are empty & `parameters.network.value.peerToHubVirtualNetwork` is false. |
+| Deployment with optional subnets | [tests/schemas/lz-machinelearning/FullDeployment-With-OptionalSubnets.json](../../tests/schemas/lz-machinelearning/FullDeployment-With-OptionalSubnets.json) | `parameters.network.subnets.optional` array is set with optional subnets. |
 | Deployment with subscription budget | [tests/schemas/lz-machinelearning/BudgetIsTrue.json](../../tests/schemas/lz-machinelearning/BudgetIsTrue.json) | `parameters.subscriptionBudget.value.createBudget` is set to `true` and budget information filled in. |
 | Deployment without subscription budget | [tests/schemas/lz-machinelearning/BudgetIsFalse.json](../../tests/schemas/lz-machinelearning/BudgetIsFalse.json) | `parameters.subscriptionBudget.value.createBudget` is set to `false` and budget information removed. |
 | Deployment without resource tags | [tests/schemas/lz-machinelearning/EmptyResourceTags.json](../../tests/schemas/lz-machinelearning/EmptyResourceTags.json) | `parameters.resourceTags.value` is an empty object. |
@@ -285,9 +300,10 @@ This example configures:
 4. Subscription Budget with $1000
 5. Subscription Tags
 6. Resource Tags (aligned to the default tags defined in [Policies](../../policy/custom/definitions/policyset/Tags.parameters.json))
-7. Automation Account
-8. Spoke Virtual Network with Hub-managed DNS, Hub-managed private endpoint DNS Zones, Virtual Network Peering and all required subnets (zones).
-9. Deploys Azure resources with Customer Managed Keys.
+7. Log Analytics Workspace integration through Azure Defender for Cloud
+8. Automation Account
+9. Spoke Virtual Network with Hub-managed DNS, Hub-managed private endpoint DNS Zones, Virtual Network Peering and all required subnets and 2 optional subnets.
+10. Deploys Azure resources with Customer Managed Keys.
 
 > **Note 1:**  Azure Automation Account is not deployed with Customer Managed Key as it requires an Azure Key Vault instance with public network access.
 
@@ -300,19 +316,19 @@ This example configures:
   "parameters": {
     "serviceHealthAlerts": {
       "value": {
-        "resourceGroupName": "pubsec-service-health",
-        "incidentTypes": [ "Incident", "Security" ],
-        "regions": [ "Global", "Canada East", "Canada Central" ],
-        "receivers": {
-          "app": [ "alzcanadapubsec@microsoft.com" ],
-          "email": [ "alzcanadapubsec@microsoft.com" ],
-          "sms": [ { "countryCode": "1", "phoneNumber": "5555555555" } ],
-          "voice": [ { "countryCode": "1", "phoneNumber": "5555555555" } ]
-        },
-        "actionGroupName": "Sub5 ALZ action group",
-        "actionGroupShortName": "sub5-alert",
-        "alertRuleName": "Sub5 ALZ alert rule",
-        "alertRuleDescription": "Alert rule for Azure Landing Zone"
+          "resourceGroupName": "service-health",
+          "incidentTypes": [ "Incident", "Security" ],
+          "regions": [ "Global", "Canada East", "Canada Central" ],
+          "receivers": {
+              "app": [ "alzcanadapubsec@microsoft.com" ],
+              "email": [ "alzcanadapubsec@microsoft.com" ],
+              "sms": [ { "countryCode": "1", "phoneNumber": "5555555555" } ],
+              "voice": [ { "countryCode": "1", "phoneNumber": "5555555555" } ]
+          },
+          "actionGroupName": "Service health action group",
+          "actionGroupShortName": "health-alert",
+          "alertRuleName": "Incidents and Security",
+          "alertRuleDescription": "Service Health: Incidents and Security"
       }
     },
     "securityCenter": {
@@ -365,15 +381,18 @@ This example configures:
         "TechnicalContact": "technical-contact-tag"
       }
     },
+    "logAnalyticsWorkspaceResourceId": {
+        "value": "/subscriptions/bc0a4f9f-07fa-4284-b1bd-fbad38578d3a/resourcegroups/pubsec-central-logging/providers/microsoft.operationalinsights/workspaces/log-analytics-workspace"
+    },
     "resourceGroups": {
       "value": {
-        "automation": "azml-Automation",
-        "compute": "azml-Compute",
-        "monitor": "azml-Monitor",
-        "networking": "azml-Network",
+        "automation": "azml-automation",
+        "compute": "azml-compute",
+        "monitor": "azml-monitor",
+        "networking": "azml-networking",
         "networkWatcher": "NetworkWatcherRG",
-        "security": "azml-Security",
-        "storage": "azml-Storage"
+        "security": "azml-security",
+        "storage": "azml-storage"
       }
     },
     "useCMK": {
@@ -381,7 +400,7 @@ This example configures:
     },
     "automation": {
       "value": {
-        "name": "azml-automation"
+        "name": "automation"
       }
     },
     "keyVault": {
@@ -431,13 +450,13 @@ This example configures:
     },
     "hubNetwork": {
       "value": {
-        "virtualNetworkId": "/subscriptions/ed7f4eed-9010-4227-b115-2a5e37728f27/resourceGroups/pubsec-hub-networking-rg/providers/Microsoft.Network/virtualNetworks/hub-vnet",
+        "virtualNetworkId": "/subscriptions/ed7f4eed-9010-4227-b115-2a5e37728f27/resourceGroups/pubsec-hub-networking/providers/Microsoft.Network/virtualNetworks/hub-vnet",
         "rfc1918IPRange": "10.18.0.0/22",
         "rfc6598IPRange": "100.60.0.0/16",
         "egressVirtualApplianceIp": "10.18.1.4",
         "privateDnsManagedByHub": true,
         "privateDnsManagedByHubSubscriptionId": "ed7f4eed-9010-4227-b115-2a5e37728f27",
-        "privateDnsManagedByHubResourceGroupName": "pubsec-dns-rg"
+        "privateDnsManagedByHubResourceGroupName": "pubsec-dns"
       }
     },
     "network": {
@@ -452,26 +471,6 @@ This example configures:
           "10.4.0.0/16"
         ],
         "subnets": {
-          "oz": {
-            "comments": "Foundational Elements Zone (OZ)",
-            "name": "oz",
-            "addressPrefix": "10.4.1.0/25"
-          },
-          "paz": {
-            "comments": "Presentation Zone (PAZ)",
-            "name": "paz",
-            "addressPrefix": "10.4.2.0/25"
-          },
-          "rz": {
-            "comments": "Application Zone (RZ)",
-            "name": "rz",
-            "addressPrefix": "10.4.3.0/25"
-          },
-          "hrz": {
-            "comments": "Data Zone (HRZ)",
-            "name": "hrz",
-            "addressPrefix": "10.4.4.0/25"
-          },
           "sqlmi": {
             "comments": "SQL Managed Instances Delegated Subnet",
             "name": "sqlmi",
@@ -496,12 +495,39 @@ This example configures:
             "comments": "AKS Subnet",
             "name": "aks",
             "addressPrefix": "10.4.9.0/25"
-          }
+          },
           "appService": {
             "comments": "App Service Subnet",
             "name": "appService",
             "addressPrefix": "10.4.10.0/25"
-          }
+          },
+          "optional": [
+            {
+              "comments": "Optional Subnet 1",
+              "name": "virtualMachines",
+              "addressPrefix": "10.4.11.0/25",
+              "nsg": {
+                "enabled": true
+              },
+              "udr": {
+                "enabled": true
+              }
+            },
+            {
+              "comments": "Optional Subnet 2 with delegation for NetApp Volumes",
+              "name": "NetappVolumes",
+              "addressPrefix": "10.4.12.0/25",
+              "nsg": {
+                "enabled": false
+              },
+              "udr": {
+                "enabled": false
+              },
+              "delegations": {
+                  "serviceName": "Microsoft.NetApp/volumes"
+              }
+            }
+          ]
         }
       }
     }

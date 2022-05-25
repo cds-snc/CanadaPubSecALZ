@@ -3,10 +3,15 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
+<<<<<<< HEAD
+<<<<<<<< HEAD:tests/schemas/lz-generic-subscription/FullDeployment-With-Location.json
+=======
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
             "value": "canada"
         },
         "serviceHealthAlerts": {
             "value": {
+<<<<<<< HEAD
                 "resourceGroupName": "pubsec-service-health",
                 "incidentTypes": [
                     "Incident",
@@ -17,6 +22,15 @@
                     "Canada East",
                     "Canada Central"
                 ],
+========
+            "value": "canadacentral"
+        },
+        "serviceHealthAlerts": {
+            "value": {
+                "resourceGroupName": "service-health",
+                "incidentTypes": [ "Incident", "Security" ],
+                "regions": [ "Global", "Canada East", "Canada Central" ],
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/4f9f8765-911a-4a6d-af60-4bc0473268c0_generic-subscription_canadacentral.json
                 "receivers": {
                     "app": [
                         "alzcanadapubsec@microsoft.com"
@@ -36,11 +50,21 @@
                             "phoneNumber": "5555555555"
                         }
                     ]
+=======
+                "resourceGroupName": "service-health",
+                "incidentTypes": [ "Incident", "Security" ],
+                "regions": [ "Global", "Canada East", "Canada Central" ],
+                "receivers": {
+                    "app": [ "alzcanadapubsec@microsoft.com" ],
+                    "email": [ "alzcanadapubsec@microsoft.com" ],
+                    "sms": [ { "countryCode": "1", "phoneNumber": "5555555555" } ],
+                    "voice": [ { "countryCode": "1", "phoneNumber": "5555555555" } ]
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
                 },
-                "actionGroupName": "Sub1 ALZ action group",
-                "actionGroupShortName": "sub1-alert",
-                "alertRuleName": "Sub1 ALZ alert rule",
-                "alertRuleDescription": "Alert rule for Azure Landing Zone"
+                "actionGroupName": "Service health action group",
+                "actionGroupShortName": "health-alert",
+                "alertRuleName": "Incidents and Security",
+                "alertRuleDescription": "Service Health: Incidents and Security"
             }
         },
         "securityCenter": {
@@ -93,12 +117,34 @@
                 "TechnicalContact": "technical-contact-tag"
             }
         },
+<<<<<<< HEAD
         "resourceGroups": {
             "value": {
+<<<<<<<< HEAD:tests/schemas/lz-generic-subscription/FullDeployment-With-Location.json
                 "automation": "rgAutomation092021W3",
                 "networking": "rgVnet092021W3",
+=======
+        "logAnalyticsWorkspaceResourceId": {
+            "value": "/subscriptions/bc0a4f9f-07fa-4284-b1bd-fbad38578d3a/resourcegroups/pubsec-central-logging/providers/microsoft.operationalinsights/workspaces/log-analytics-workspace"
+        },
+        "resourceGroups": {
+            "value": {
+<<<<<<<< HEAD:tests/schemas/lz-generic-subscription/WithoutOptionalSubnets.json
+                "automation": "rgAutomation",
+                "networking": "rgVnet",
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
                 "networkWatcher": "NetworkWatcherRG",
                 "backupRecoveryVault":"rgRecoveryVault"
+========
+                "automation": "automation",
+                "networking": "networking",
+                "networkWatcher": "NetworkWatcherRG",
+                "backupRecoveryVault": "backup"
+<<<<<<< HEAD
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/4f9f8765-911a-4a6d-af60-4bc0473268c0_generic-subscription_canadacentral.json
+=======
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:tests/schemas/lz-generic-subscription/FullDeployment-With-Location.json
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
             }
         },
         "automation": {
@@ -106,15 +152,15 @@
                 "name": "automation"
             }
         },
-        "backupRecoveryVault":{
+        "backupRecoveryVault": {
             "value": {
-                "enabled":true,
-                "name":"bkupvault"
+                "enabled": true,
+                "name": "backup-vault"
             }
         },
         "hubNetwork": {
             "value": {
-                "virtualNetworkId": "/subscriptions/ed7f4eed-9010-4227-b115-2a5e37728f27/resourceGroups/pubsec-hub-networking-rg/providers/Microsoft.Network/virtualNetworks/hub-vnet",
+                "virtualNetworkId": "/subscriptions/ed7f4eed-9010-4227-b115-2a5e37728f27/resourceGroups/pubsec-hub-networking/providers/Microsoft.Network/virtualNetworks/hub-vnet",
                 "rfc1918IPRange": "10.18.0.0/22",
                 "rfc6598IPRange": "100.60.0.0/16",
                 "egressVirtualApplianceIp": "10.18.1.4"
@@ -132,10 +178,14 @@
                 "addressPrefixes": [
                     "10.2.0.0/16"
                 ],
-                "subnets": {
-                    "oz": {
-                        "comments": "Foundational Elements Zone (OZ)",
+                "subnets": [
+                    {
+                        "comments": "App Management Zone (OZ)",
+<<<<<<< HEAD
+                        "name": "appManagement",
+=======
                         "name": "oz",
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
                         "addressPrefix": "10.2.1.0/25",
                         "nsg": {
                             "enabled": true
@@ -144,9 +194,13 @@
                             "enabled": true
                         }
                     },
-                    "paz": {
+                    {
                         "comments": "Presentation Zone (PAZ)",
+<<<<<<< HEAD
+                        "name": "web",
+=======
                         "name": "paz",
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
                         "addressPrefix": "10.2.2.0/25",
                         "nsg": {
                             "enabled": true
@@ -155,9 +209,13 @@
                             "enabled": true
                         }
                     },
-                    "rz": {
+                    {
                         "comments": "Application Zone (RZ)",
+<<<<<<< HEAD
+                        "name": "app",
+=======
                         "name": "rz",
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
                         "addressPrefix": "10.2.3.0/25",
                         "nsg": {
                             "enabled": true
@@ -166,9 +224,13 @@
                             "enabled": true
                         }
                     },
-                    "hrz": {
+                    {
                         "comments": "Data Zone (HRZ)",
+<<<<<<< HEAD
+                        "name": "data",
+=======
                         "name": "hrz",
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
                         "addressPrefix": "10.2.4.0/25",
                         "nsg": {
                             "enabled": true
@@ -177,23 +239,21 @@
                             "enabled": true
                         }
                     },
-                    "optional": [
-                        {
-                            "comments": "App Service",
-                            "name": "appservice",
-                            "addressPrefix": "10.2.5.0/25",
-                            "nsg": {
-                                "enabled": false
-                            },
-                            "udr": {
-                                "enabled": false
-                            },
-                            "delegations": {
-                                "serviceName": "Microsoft.Web/serverFarms"
-                            }
+                    {
+                        "comments": "App Service",
+                        "name": "appservice",
+                        "addressPrefix": "10.2.5.0/25",
+                        "nsg": {
+                            "enabled": false
+                        },
+                        "udr": {
+                            "enabled": false
+                        },
+                        "delegations": {
+                            "serviceName": "Microsoft.Web/serverFarms"
                         }
-                    ]
-                }
+                    }
+                ]
             }
         }
     }

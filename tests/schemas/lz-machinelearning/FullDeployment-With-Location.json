@@ -7,6 +7,8 @@
     },
     "serviceHealthAlerts": {
       "value": {
+<<<<<<< HEAD
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/FullDeployment-With-Location.json
         "resourceGroupName": "pubsec-service-health",
         "incidentTypes": [
           "Incident",
@@ -41,6 +43,26 @@
         "actionGroupShortName": "sub3-alert",
         "alertRuleName": "Sub3 ALZ alert rule",
         "alertRuleDescription": "Alert rule for Azure Landing Zone"
+========
+=======
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
+          "resourceGroupName": "service-health",
+          "incidentTypes": [ "Incident", "Security" ],
+          "regions": [ "Global", "Canada East", "Canada Central" ],
+          "receivers": {
+              "app": [ "alzcanadapubsec@microsoft.com" ],
+              "email": [ "alzcanadapubsec@microsoft.com" ],
+              "sms": [ { "countryCode": "1", "phoneNumber": "5555555555" } ],
+              "voice": [ { "countryCode": "1", "phoneNumber": "5555555555" } ]
+          },
+          "actionGroupName": "Service health action group",
+          "actionGroupShortName": "health-alert",
+          "alertRuleName": "Incidents and Security",
+          "alertRuleDescription": "Service Health: Incidents and Security"
+<<<<<<< HEAD
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
+=======
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
       }
     },
     "securityCenter": {
@@ -93,8 +115,10 @@
         "TechnicalContact": "technical-contact-tag"
       }
     },
+<<<<<<< HEAD
     "resourceGroups": {
       "value": {
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/FullDeployment-With-Location.json
         "automation": "azmlcmkAutomation",
         "compute": "azmlcmkCompute",
         "monitor": "azmlcmkMonitor",
@@ -102,6 +126,29 @@
         "networkWatcher": "NetworkWatcherRG",
         "security": "azmlcmkSecurity",
         "storage": "azmlcmkStorage"
+========
+        "automation": "azmlcmk-automation",
+        "compute": "azmlcmk-compute",
+        "monitor": "azmlcmk-monitor",
+        "networking": "azmlcmk-networking",
+        "networkWatcher": "NetworkWatcherRG",
+        "security": "azmlcmk-security",
+        "storage": "azmlcmk-storage"
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
+=======
+    "logAnalyticsWorkspaceResourceId": {
+      "value": "/subscriptions/bc0a4f9f-07fa-4284-b1bd-fbad38578d3a/resourcegroups/pubsec-central-logging/providers/microsoft.operationalinsights/workspaces/log-analytics-workspace"
+    },
+    "resourceGroups": {
+      "value": {
+        "automation": "azml-automation",
+        "compute": "azml-compute",
+        "monitor": "azml-monitor",
+        "networking": "azml-networking",
+        "networkWatcher": "NetworkWatcherRG",
+        "security": "azml-security",
+        "storage": "azml-storage"
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
       }
     },
     "useCMK": {
@@ -109,7 +156,15 @@
     },
     "automation": {
       "value": {
+<<<<<<< HEAD
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/FullDeployment-With-Location.json
         "name": "azmlcmkautomation"
+========
+        "name": "automation"
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
+=======
+        "name": "automation"
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
       }
     },
     "keyVault": {
@@ -119,7 +174,11 @@
     },
     "aks": {
       "value": {
+<<<<<<< HEAD
+        "version": "1.22.6",
+=======
         "version": "1.21.2",
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
         "enabled": true,
         "networkPlugin": "kubenet",
         "networkPolicy": "calico",
@@ -140,10 +199,21 @@
     "sqldb": {
       "value": {
         "enabled": true,
+<<<<<<< HEAD
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/FullDeployment-With-Location.json
+=======
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
         "aadAuthenticationOnly": true,
         "aadLoginName": "DBA Group",
         "aadLoginObjectID": "4e4ea47c-ee21-4add-ad2f-a75d0d8014e0",
         "aadLoginType": "Group"
+<<<<<<< HEAD
+========
+        "sqlAuthenticationUsername": "azadmin",
+        "aadAuthenticationOnly": false
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
+=======
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
       }
     },
     "sqlmi": {
@@ -159,20 +229,28 @@
     },
     "hubNetwork": {
       "value": {
-        "virtualNetworkId": "/subscriptions/ed7f4eed-9010-4227-b115-2a5e37728f27/resourceGroups/pubsec-hub-networking-rg/providers/Microsoft.Network/virtualNetworks/hub-vnet",
+        "virtualNetworkId": "/subscriptions/ed7f4eed-9010-4227-b115-2a5e37728f27/resourceGroups/pubsec-hub-networking/providers/Microsoft.Network/virtualNetworks/hub-vnet",
         "rfc1918IPRange": "10.18.0.0/22",
         "rfc6598IPRange": "100.60.0.0/16",
         "egressVirtualApplianceIp": "10.18.1.4",
         "privateDnsManagedByHub": true,
         "privateDnsManagedByHubSubscriptionId": "ed7f4eed-9010-4227-b115-2a5e37728f27",
-        "privateDnsManagedByHubResourceGroupName": "pubsec-dns-rg"
+        "privateDnsManagedByHubResourceGroupName": "pubsec-dns"
       }
     },
     "network": {
       "value": {
         "peerToHubVirtualNetwork": true,
         "useRemoteGateway": false,
+<<<<<<< HEAD
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/FullDeployment-With-Location.json
         "name": "azmlcmkvnet",
+========
+        "name": "azmlcmk-vnet",
+>>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
+=======
+        "name": "azml-vnet",
+>>>>>>> 2b11801386654f6b3f68bd63c887d74ec7a4fdb8
         "dnsServers": [
           "10.18.1.4"
         ],
@@ -180,26 +258,6 @@
           "10.1.0.0/16"
         ],
         "subnets": {
-          "oz": {
-            "comments": "Foundational Elements Zone (OZ)",
-            "name": "oz",
-            "addressPrefix": "10.1.1.0/25"
-          },
-          "paz": {
-            "comments": "Presentation Zone (PAZ)",
-            "name": "paz",
-            "addressPrefix": "10.1.2.0/25"
-          },
-          "rz": {
-            "comments": "Application Zone (RZ)",
-            "name": "rz",
-            "addressPrefix": "10.1.3.0/25"
-          },
-          "hrz": {
-            "comments": "Data Zone (HRZ)",
-            "name": "hrz",
-            "addressPrefix": "10.1.4.0/25"
-          },
           "sqlmi": {
             "comments": "SQL Managed Instances Delegated Subnet",
             "name": "sqlmi",
@@ -229,7 +287,8 @@
             "comments": "App Service Subnet",
             "name": "appService",
             "addressPrefix": "10.1.10.0/25"
-          }
+          },
+          "optional": []
         }
       }
     }
