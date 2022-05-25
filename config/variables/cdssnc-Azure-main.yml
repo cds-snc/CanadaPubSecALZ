@@ -1,0 +1,80 @@
+# ----------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
+#
+# THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
+# EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES 
+# OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+# ----------------------------------------------------------------------------------
+
+# Environment YAML files can be used to supplement
+# the variables specified in 'config/variables/common.yml'. You can:
+#   * Override existing common-vars.yml variable value settings, and
+#   * Create new variable values not present in common-vars.yml
+#
+# The naming convention for these YAML files is:
+#   {organization}-{branch}.yml
+#
+# where {organization} is the organization variable from the
+#         common.yml file
+# and   {branch} is the Azure Repos branch name used by the
+#         currently executing pipeline.
+
+variables:
+  deploymentRegion: canadacentral
+
+  # Management Groups
+  var-managementgroup-hierarchy: >
+    {
+      "name": "Tenant Root Group",
+      "id": "221ca1d3-b3f2-4346-8abc-88f802495c7d",
+      "children": [
+        {
+          "name": "pubsec",
+          "id": "pubsec",
+          "children": [
+            {
+              "name": "pubsecPlatform", "id": "pubsecPlatform",
+              "children": [
+                { "name": "pubsecPlatformIdentity", "id": "pubsecPlatformIdentity", "children": [] },
+                { "name": "pubsecPlatformConnectivity", "id": "pubsecPlatformConnectivity", "children": [] },
+                { "name": "pubsecPlatformConnectivity", "id": "pubsecPlatformManagement", "children": [] }
+              ]
+            },
+            {
+              "name": "LandingZones", "id": "pubsecLandingZones",
+              "children": [
+                { "name": "pubsecLandingZonesDevTest", "id": "pubsecLandingZonesDevTest", "children": [] },
+                { "name": "pubsecLandingZonesQA", "id": "pubsecLandingZonesQA", "children": [] },
+                { "name": "pubsecLandingZonesProd", "id": "pubsecLandingZonesProd", "children": [] }
+              ]
+            },
+            {
+              "name": "pubsecSandbox", "id": "pubsecSandbox",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+
+  # Logging
+  var-logging-region: canadacentral
+  var-logging-managementGroupId: pubsecPlatform
+  var-logging-subscriptionId: f27b081a-aa54-4ab4-9f26-a4c5375dc8fa
+  var-logging-configurationFileName: logging.parameters.json
+
+  ## This parameter is only used for HIPAA/HITRUST Policy Assignment
+  var-logging-diagnosticSettingsforNetworkSecurityGroupsStoragePrefix: pubsecnsg
+
+  # # Hub Networking
+  # var-hubnetwork-region: canadacentral
+  # var-hubnetwork-managementGroupId: pubsecPlatformConnectivity
+  # var-hubnetwork-subscriptionId: ed7f4eed-9010-4227-b115-2a5e37728f27
+
+  # ## Hub Network configuration using Azure Firewall - required when Azure Firewall is used
+  # var-hubnetwork-azfwPolicy-configurationFileName: hub-azfw-policy/azure-firewall-policy.parameters.json
+  # var-hubnetwork-azfw-configurationFileName: hub-azfw/hub-network.parameters.json
+
+  # ## Hub Network configuration using Network Virtual Appliance (NVA) - required when Network Virtual Appliance (NVA) like Fortigate Firewalls are used
+  # var-hubnetwork-nva-configurationFileName: hub-nva/hub-network.parameters.json
