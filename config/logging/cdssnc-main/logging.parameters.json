@@ -30,11 +30,7 @@
     },
     "subscriptionBudget": {
       "value": {
-        "createBudget": false,
-        "name": "MonthlySubscriptionBudget",
-        "amount": 1000,
-        "timeGrain": "Monthly",
-        "contactEmails": [ "security@cds-snc.ca" ]
+        "createBudget": false
       }
     },
     "subscriptionTags": {
