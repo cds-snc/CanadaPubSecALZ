@@ -25,7 +25,9 @@
         "phone": ""
       }
     },
- 
+    "subscriptionRoleAssignments": {
+      "value": {}
+    },
     "subscriptionBudget": {
       "value": {
         "createBudget": false,
