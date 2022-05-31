@@ -38,7 +38,7 @@ variables:
               "children": [
                 { "name": "pubsecPlatformIdentity", "id": "pubsecPlatformIdentity", "children": [] },
                 { "name": "pubsecPlatformConnectivity", "id": "pubsecPlatformConnectivity", "children": [] },
-                { "name": "pubsecPlatformConnectivity", "id": "pubsecPlatformManagement", "children": [] }
+                { "name": "pubsecPlatformManagement", "id": "pubsecPlatformManagement", "children": [] }
               ]
             },
             {
