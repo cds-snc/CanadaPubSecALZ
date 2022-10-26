@@ -169,11 +169,7 @@
       "value": {
         "peerToHubVirtualNetwork": true,
         "useRemoteGateway": false,
-<<<<<<<< HEAD:tests/schemas/lz-machinelearning/FullDeployment-With-Location.json
-        "name": "azml-vnet",
-========
         "name": "azmlcmk-vnet",
->>>>>>>> c714e65b81d4bf5048bcf56351534a8be26c5c0c:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
         "dnsServers": [
           "10.18.1.4"
         ],
