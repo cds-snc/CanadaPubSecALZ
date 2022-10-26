@@ -74,6 +74,7 @@
     },
     "resourceGroups": {
       "value": {
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/FullDeployment-With-OptionalSubnets.json
         "automation": "azml-automation",
         "compute": "azml-compute",
         "monitor": "azml-monitor",
@@ -81,6 +82,15 @@
         "networkWatcher": "NetworkWatcherRG",
         "security": "azml-security",
         "storage": "azml-storage"
+========
+        "automation": "azmlnocmk-automation",
+        "compute": "azmlnocmk-compute",
+        "monitor": "azmlnocmk-monitor",
+        "networking": "azmlnocmk-networking",
+        "networkWatcher": "NetworkWatcherRG",
+        "security": "azmlnocmk-security",
+        "storage": "azmlnocmk-storage"
+>>>>>>>> c714e65b81d4bf5048bcf56351534a8be26c5c0c:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/f08c3057-1713-4a6f-b7e6-0df355b60c30_machinelearning_canadacentral.json
       }
     },
     "useCMK": {
@@ -98,7 +108,7 @@
     },
     "aks": {
       "value": {
-        "version": "1.21.2",
+        "version": "1.22.6",
         "enabled": true,
         "networkPlugin": "kubenet",
         "networkPolicy": "calico",
@@ -119,10 +129,15 @@
     "sqldb": {
       "value": {
         "enabled": true,
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/FullDeployment-With-OptionalSubnets.json
         "aadAuthenticationOnly": true,
         "aadLoginName": "DBA Group",
         "aadLoginObjectID": "4e4ea47c-ee21-4add-ad2f-a75d0d8014e0",
         "aadLoginType": "Group"
+========
+        "sqlAuthenticationUsername": "azadmin",
+        "aadAuthenticationOnly": false
+>>>>>>>> c714e65b81d4bf5048bcf56351534a8be26c5c0c:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/f08c3057-1713-4a6f-b7e6-0df355b60c30_machinelearning_canadacentral.json
       }
     },
     "sqlmi": {
@@ -151,7 +166,11 @@
       "value": {
         "peerToHubVirtualNetwork": true,
         "useRemoteGateway": false,
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/FullDeployment-With-OptionalSubnets.json
         "name": "azml-vnet",
+========
+        "name": "azmlnocmk-vnet",
+>>>>>>>> c714e65b81d4bf5048bcf56351534a8be26c5c0c:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/f08c3057-1713-4a6f-b7e6-0df355b60c30_machinelearning_canadacentral.json
         "dnsServers": [
           "10.18.1.4"
         ],
@@ -187,6 +206,7 @@
           "appService": {
             "comments": "App Service Subnet",
             "name": "appService",
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/FullDeployment-With-OptionalSubnets.json
             "addressPrefix": "10.1.10.0/25"
           },
           "optional": [
@@ -216,6 +236,11 @@
               }
             }
           ]
+========
+            "addressPrefix": "10.3.10.0/25"
+          },
+          "optional": []
+>>>>>>>> c714e65b81d4bf5048bcf56351534a8be26c5c0c:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/f08c3057-1713-4a6f-b7e6-0df355b60c30_machinelearning_canadacentral.json
         }
       }
     }
