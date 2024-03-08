@@ -4,6 +4,8 @@ This document provides steps required to onboard to the Azure Landing Zones desi
 
 > There are scripts available to help simplify the onboarding process to Azure Landing Zones design using Azure DevOps Pipelines. The [Azure DevOps Scripts](./azure-devops-scripts.md) document contains more detailed information on the those scripts.
 
+> There are scripts available to help simplify the configuration process of the Azure Landing Zones design. The [Configuration Scripts](./configuration-scripts.md) document contains more detailed information on the those scripts.
+
 **All steps will need to be repeated per Azure AD tenant.**
 
 ---
@@ -12,7 +14,7 @@ This document provides steps required to onboard to the Azure Landing Zones desi
 
 > Telemetry is introduced on November 11, 2021.
 
-Microsoft can identify the deployments of the Azure Resource Manager and Bicep templates with the deployed Azure resources. Microsoft can correlate these resources used to support the deployments. Microsoft collects this information to provide the best experiences with their products and to operate their business.  The telemetry is collected through [customer usage attribution](https://docs.microsoft.com/azure/marketplace/azure-partner-customer-usage-attribution). The data is collected and governed by Microsoft's privacy policies, located at [https://www.microsoft.com/trustcenter](https://www.microsoft.com/trustcenter).
+Microsoft can identify the deployments of the Azure Resource Manager and Bicep templates with the deployed Azure resources. Microsoft can correlate these resources used to support the deployments. Microsoft collects this information to provide the best experiences with their products and to operate their business.  The telemetry is collected through [customer usage attribution](https://learn.microsoft.com/azure/marketplace/azure-partner-customer-usage-attribution). The data is collected and governed by Microsoft's privacy policies, located at [https://www.microsoft.com/trustcenter](https://www.microsoft.com/trustcenter).
 
 The automation is instrumented to identify the modules that are being deployed.  At this time, we don't differentiate the deployments and tracked under a single GUID (`a83f6385-f514-415f-991b-2d9bd7aed658`).
 
@@ -63,6 +65,7 @@ This deployment diagram describes the steps for deploying one, many or all modul
     Logging: Logging
     Policy: Azure Policy
     HubNetworking: Hub Networking (NVAs or Azure Firewall)
+    Identity: Identity
     Archetypes: Archetypes (Spokes)
 
     [*] --> ManagementGroups
@@ -73,10 +76,13 @@ This deployment diagram describes the steps for deploying one, many or all modul
 
     Policy --> HubNetworking
     Policy --> Archetypes
+    HubNetworking --> Identity
+
 
     HubNetworking --> Archetypes
 
     Policy --> [*]
+    Identity --> [*]
     HubNetworking --> [*]
     Archetypes --> [*]
 ```
@@ -103,6 +109,10 @@ This deployment diagram describes the steps for deploying one, many or all modul
     AssignDDOSPolicy: [Optional] Assign Azure Policy for linking DDoS Standard Plan to virtual network
     AssignPrivateDNSZonesPolicy: [Optional] Assign Azure Policies for centrally managing private DNS zones
 
+    Identity: Identity
+    DeployVirtualNetwork: Deploy Virtual Network
+    DeployDNSResolver: Deploy DNS Resolver (optional)
+
     Archetypes: Archetypes (Spokes)
     DeployGenericSubscriptionArchetype: Generic Subscription
     DeployMachineLearningArchetype: Machine Learning
@@ -126,6 +136,7 @@ This deployment diagram describes the steps for deploying one, many or all modul
     }
 
     Policy --> HubNetworking: When Hub Networking is required
+    HubNetworking --> Archetypes: When archetypes are deployed in spoke subscriptions
     Policy --> Archetypes: When existing Hub Networking is in place
 
     state HubNetworking {
@@ -150,7 +161,13 @@ This deployment diagram describes the steps for deploying one, many or all modul
         AssignPrivateDNSZonesPolicy --> [*]
     }
 
-    HubNetworking --> Archetypes: When archetypes are deployed in spoke subscriptions
+    HubNetworking --> Identity: When Identity Sub is required
+
+    state Identity {
+        DeployVirtualNetwork --> DeployDNSResolver
+        DeployDNSResolver --> [*]
+    }
+    
 
     state Archetypes {
         state ArchetypeChoice <<choice>>
@@ -163,7 +180,8 @@ This deployment diagram describes the steps for deploying one, many or all modul
     }
 
     Policy --> [*]: MVP deployment and enables Microsoft Sentinel & Log Analytics
-    HubNetworking --> [*]
+    HubNetworking --> [*]: Identity Sub is NOT required
+    Identity --> [*]
     Archetypes --> [*]
 ```
 
@@ -178,11 +196,14 @@ This deployment diagram describes the steps for deploying one, many or all modul
 * [Step 5 - Configure Logging](#step-5---configure-logging)
 * [Step 6 - Configure Azure Policies](#step-6---configure-azure-policies)
 * [Step 7 - Configure Hub Networking](#step-7---configure-hub-networking)
-* [Step 8 - Configure Subscription Archetypes](#step-8---configure-subscription-archetypes)
+* [Step 8 - Configure Identity subscription](#step-8---configure-identity-subscription)
+* [Step 9 - Configure Subscription Archetypes](#step-9---configure-subscription-archetypes)
 * [Appendix](#appendix)
   * [Populate management group hierarchy from your environment](#populate-management-group-hierarchy-from-your-environment)
   * [Migrate Logging configuration from Azure DevOps variables to JSON parameters file](#migrate-logging-configuration-from-azure-devops-variables-to-json-parameters-file)
   * [Migrate Hub Networking configuration from Azure DevOps variables to JSON parameters file](#migrate-hub-networking-configuration-from-azure-devops-variables-to-json-parameters-file)
+
+>Note: For steps #3 - #9 above, there are scripts available to automate generating the JSON and YAML configuration files for environments. Refer to the [Configuration Scripts](./configuration-scripts.md) documentation for more information.
 
 ---
 
@@ -196,9 +217,9 @@ An Azure service principal is an identity created for use with applications, hos
 
   * **Scope:**  Tenant Root Group (this is a management group in the Azure environment)
 
-  * **Role:**  [Owner](https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#owner) (Grants full access to manage all resources, including the ability to assign roles in [Azure RBAC](https://docs.microsoft.com/azure/role-based-access-control/overview).  Owner permission is required so that the Azure DevOps Pipelines can create resources and role assignments.)
+  * **Role:**  [Owner](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#owner) (Grants full access to manage all resources, including the ability to assign roles in [Azure RBAC](https://learn.microsoft.com/azure/role-based-access-control/overview).  Owner permission is required so that the Azure DevOps Pipelines can create resources and role assignments.)
 
-  * **Instructions**:  [Create an Azure service principal with the Azure CLI | Microsoft Docs](https://docs.microsoft.com/cli/azure/create-an-azure-service-principal-azure-cli)
+  * **Instructions**:  [Create an Azure service principal with the Azure CLI | Microsoft Docs](https://learn.microsoft.com/cli/azure/create-an-azure-service-principal-azure-cli)
 
 To create the service principal account and role assignment through Azure CLI:
 
@@ -263,11 +284,11 @@ Note down the `appId`, `tenant` and `password`.  These will be required to for s
 
   * Verify and save
 
-* **Reference**:  [Service connections in Azure Pipelines - Azure Pipelines | Microsoft Docs](https://docs.microsoft.com/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml).  Use the settings described above when following the instructions.
+* **Reference**:  [Service connections in Azure Pipelines - Azure Pipelines | Microsoft Docs](https://learn.microsoft.com/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml).  Use the settings described above when following the instructions.
 
 ### Step 2.2: Configure Azure DevOps Pipeline Environment
 
-An environment is a collection of resources that you can target with deployments from a pipeline. Typical examples of environment names are Dev, Test, QA, Staging, and Production.  More information such as benefits of using Environments can be found in [Azure Docs](https://docs.microsoft.com/azure/devops/pipelines/process/environments).
+An environment is a collection of resources that you can target with deployments from a pipeline. Typical examples of environment names are Dev, Test, QA, Staging, and Production.  More information such as benefits of using Environments can be found in [Azure Docs](https://learn.microsoft.com/azure/devops/pipelines/process/environments).
 
 Azure DevOps may create an environment if it doesn't exist, however, it's recommended to explicitly create an empty environment and reference it from deployment jobs. This lets you record the deployment history against the environment.
 
@@ -325,7 +346,7 @@ Instructions:
 
     >**Note**: The ID of the default parent management group 'Tenant Root Group' is the same as the Azure Active Directory (AAD) Tenant ID (GUID).
 
-2. Create/edit `./config/variables/<devops-org-name>-<branch-name>.yml` in Git (i.e. CanadaESLZ-main.yml).  This file name is automatically inferred by the pipeline based on the Azure DevOps organization name and the branch name.
+2. Create/edit `./config/variables/<devops-org-name>-<branch-name>.yml` in Git (i.e. CanadaPubSecALZ-main.yml).  This file name is automatically inferred by the pipeline based on the Azure DevOps organization name and the branch name.
 
     **Sample environment YAML (v0.9.0 or later)**
 
@@ -386,7 +407,7 @@ Instructions:
 
       * Specify the `id` and `name` of your existing Azure AD tenant for the topmost management group definition. The `id` attribute for this element is mapped into the `var-parentManagementGroupId` pipeline variable for backward compatibility.
       * Specify only 1 child management group definition for the topmost management group definition. You can specify more than 1 child of the topmost management group definition, but it is the first child of the topmost level that will be considered the root of of your management group hierarchy, and is the scope that the `policy-ci` pipeline will use to deploy built-in and custom policies. The `id` attribute for this element is mapped into the `var-topLevelManagementGroupName` pipeline variable for backward compatibility.
-      * The `id` attribute for management group elements can only be an ASCII letter, digit, `-`, `_`, `(`, `)`, `.` and cannot end with a period. In the sample environment configuration file (`CanadaESLZ-main.yml`), we illustrate a convention that prepends the id of the parent management group to the id of each child management group. This is an example only and not a requirement. You are welcome to choose any management group id convention that best suits your needs.
+      * The `id` attribute for management group elements can only be an ASCII letter, digit, `-`, `_`, `(`, `)`, `.` and cannot end with a period. In the sample environment configuration file (`CanadaPubSecALZ-main.yml`), we illustrate a convention that prepends the id of the parent management group to the id of each child management group. This is an example only and not a requirement. You are welcome to choose any management group id convention that best suits your needs.
       * If you are using **CanadaPubSecALZ v0.9.0 or later** and **do not** include a `var-managementgroup-hierarchy` variable setting in your configuration, it will fallback to using the pipeline variables `var-parentManagementGroupId` and `var-topLevelManagementGroupName`. This is to ensure backward compatibility, enabling newer versions of the code to run with older environment configurations.
       * If you are using **CanadaPubSecALZ v0.9.0** or later and **do** include a `var-managementgroup-hierarchy` variable setting in your configuration, it will override any pipeline variables `var-parentManagementGroupId` and `var-topLevelManagementGroupName` also present.
 
@@ -468,8 +489,8 @@ This role assignment is used to grant users access to the logging subscription b
 > **The deployment automation will update the existing resources instead of creating new.**
 
 1. Create directory `./config/logging`.
-2. Create subdirectory based on the syntax: `<devops-org-name>-<branch-name>` (e.g. `CanadaESLZ-main` to create path `./config/logging/CanadaESLZ-main/`).
-3. Create JSON parameters file with name `logging.parameters.json` (any name can be used) in directory created on step 2 (i.e. `./config/logging/CanadaESLZ-main/logging.parameters.json`).
+2. Create subdirectory based on the syntax: `<devops-org-name>-<branch-name>` (e.g. `CanadaPubSecALZ-main` to create path `./config/logging/CanadaPubSecALZ-main/`).
+3. Create JSON parameters file with name `logging.parameters.json` (any name can be used) in directory created on step 2 (i.e. `./config/logging/CanadaPubSecALZ-main/logging.parameters.json`).
 4. Define deployment parameters based on example below.
 
     * Set valid contact information for the Azure Service Health Alerts: email and phone number.
@@ -502,8 +523,8 @@ This role assignment is used to grant users access to the logging subscription b
                   "receivers": {
                       "app": [ "alzcanadapubsec@microsoft.com" ],
                       "email": [ "alzcanadapubsec@microsoft.com" ],
-                      "sms": [ { "countryCode": "1", "phoneNumber": "5555555555" } ],
-                      "voice": [ { "countryCode": "1", "phoneNumber": "5555555555" } ]
+                      "sms": [ { "countryCode": "1", "phoneNumber": "6045555555" } ],
+                      "voice": [ { "countryCode": "1", "phoneNumber": "6045555555" } ]
                   },
                   "actionGroupName": "Service health action group",
                   "actionGroupShortName": "health-alert",
@@ -514,7 +535,7 @@ This role assignment is used to grant users access to the logging subscription b
             "securityCenter": {
               "value": {
                 "email": "alzcanadapubsec@microsoft.com",
-                "phone": "5555555555"
+                "phone": "6045555555"
               }
             },
             "subscriptionRoleAssignments": {
@@ -688,7 +709,7 @@ In order to configure audit stream for Azure Monitor, identify the following inf
     3. Navigate to Agents Management
     4. Select either Primary or Secondary Key
 
-**Instructions**: [Create an audit stream in Azure DevOps for Azure Monitor](https://docs.microsoft.com/azure/devops/organizations/audit/auditing-streaming?view=azure-devops#create-a-stream).
+**Instructions**: [Create an audit stream in Azure DevOps for Azure Monitor](https://learn.microsoft.com/azure/devops/organizations/audit/auditing-streaming?view=azure-devops#create-a-stream).
 
 ---
 
@@ -765,11 +786,11 @@ In order to configure audit stream for Azure Monitor, identify the following inf
 > * [Hub Networking with Fortigate Firewall (NVA)](../../docs/archetypes/hubnetwork-nva-fortigate.md)
 
 1. Create directory `./config/networking`.
-1. Create subdirectory based on the syntax: `<devops-org-name>-<branch-name>` (i.e. `CanadaESLZ-main` to create path `./config/networking/CanadaESLZ-main/`).
+1. Create subdirectory based on the syntax: `<devops-org-name>-<branch-name>` (i.e. `CanadaPubSecALZ-main` to create path `./config/networking/CanadaPubSecALZ-main/`).
 1. When using Hub Networking with Azure Firewall
 
-    1. Create subdirectory: `hub-azfw-policy` (i.e. `./config/networking/CanadaESLZ-main/hub-azfw-policy`)
-    1. Create JSON parameters file with name `azure-firewall-policy.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaESLZ-main/hub-azfw-policy/azure-firewall-policy.parameters.json`).
+    1. Create subdirectory: `hub-azfw-policy` (i.e. `./config/networking/CanadaPubSecALZ-main/hub-azfw-policy`)
+    1. Create JSON parameters file with name `azure-firewall-policy.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaPubSecALZ-main/hub-azfw-policy/azure-firewall-policy.parameters.json`).
     1. Define deployment parameters based on example below.
 
         * Set the values for the Azure tags that would be applied to the logging resources.
@@ -803,8 +824,8 @@ In order to configure audit stream for Azure Monitor, identify the following inf
             }
         ```
 
-    1. Create subdirectory: `hub-azfw` (i.e. `./config/networking/CanadaESLZ-main/hub-azfw`)
-    1. Create JSON parameters file with name `hub-network.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaESLZ-main/hub-azfw/hub-network.json`).
+    1. Create subdirectory: `hub-azfw` (i.e. `./config/networking/CanadaPubSecALZ-main/hub-azfw`)
+    1. Create JSON parameters file with name `hub-network.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaPubSecALZ-main/hub-azfw/hub-network.json`).
     1. Define deployment parameters based on example below.
 
         * Set valid contact information for the Azure Service Health Alerts: email and phone number.
@@ -837,8 +858,8 @@ In order to configure audit stream for Azure Monitor, identify the following inf
                       "receivers": {
                           "app": [ "alzcanadapubsec@microsoft.com" ],
                           "email": [ "alzcanadapubsec@microsoft.com" ],
-                          "sms": [ { "countryCode": "1", "phoneNumber": "5555555555" } ],
-                          "voice": [ { "countryCode": "1", "phoneNumber": "5555555555" } ]
+                          "sms": [ { "countryCode": "1", "phoneNumber": "6045555555" } ],
+                          "voice": [ { "countryCode": "1", "phoneNumber": "6045555555" } ]
                       },
                       "actionGroupName": "Service health action group",
                       "actionGroupShortName": "health-alert",
@@ -849,7 +870,7 @@ In order to configure audit stream for Azure Monitor, identify the following inf
                 "securityCenter": {
                   "value": {
                     "email": "alzcanadapubsec@microsoft.com",
-                    "phone": "5555555555"
+                    "phone": "6045555555"
                   }
                 },
                 "subscriptionRoleAssignments": {
@@ -1041,8 +1062,8 @@ In order to configure audit stream for Azure Monitor, identify the following inf
 
 1. When using Hub Networking with Fortigate Firewall (NVA)
 
-    1. Create subdirectory: `hub-nva` (i.e. `./config/networking/CanadaESLZ-main/hub-nva`)
-    1. Create JSON parameters file with name `hub-network.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaESLZ-main/hub-nva/hub-network.parameters.json`).
+    1. Create subdirectory: `hub-nva` (i.e. `./config/networking/CanadaPubSecALZ-main/hub-nva`)
+    1. Create JSON parameters file with name `hub-network.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaPubSecALZ-main/hub-nva/hub-network.parameters.json`).
     1. Define deployment parameters based on example below.
 
         * Set valid contact information for the Azure Service Health Alerts: email and phone number.
@@ -1075,8 +1096,8 @@ In order to configure audit stream for Azure Monitor, identify the following inf
                       "receivers": {
                           "app": [ "alzcanadapubsec@microsoft.com" ],
                           "email": [ "alzcanadapubsec@microsoft.com" ],
-                          "sms": [ { "countryCode": "1", "phoneNumber": "5555555555" } ],
-                          "voice": [ { "countryCode": "1", "phoneNumber": "5555555555" } ]
+                          "sms": [ { "countryCode": "1", "phoneNumber": "6045555555" } ],
+                          "voice": [ { "countryCode": "1", "phoneNumber": "6045555555" } ]
                       },
                       "actionGroupName": "Service health action group",
                       "actionGroupShortName": "health-alert",
@@ -1087,7 +1108,7 @@ In order to configure audit stream for Azure Monitor, identify the following inf
                 "securityCenter": {
                   "value": {
                     "email": "alzcanadapubsec@microsoft.com",
-                    "phone": "5555555555"
+                    "phone": "6045555555"
                   }
                 },
                 "subscriptionRoleAssignments": {
@@ -1479,8 +1500,168 @@ In order to configure audit stream for Azure Monitor, identify the following inf
     * When using Hub Networking with Azure Firewall, run `platform-connectivity-hub-azfw-policy-ci` pipeline first.  This ensures that the Azure Firewall Policy is deployed and can be used as a reference for Azure Firewall.  This approach allows for Azure Firewall Policies (such as allow/deny rules) to be managed independently from the Hub Networking components.
 
 ---
+## Step 8 - Configure Identity Subscription
 
-## Step 8 - Configure Subscription Archetypes
+1. Configure Pipeline definition for Identity 
+
+    > Pipelines are stored as YAML definitions in Git and imported into Azure DevOps Pipelines.  This approach allows for portability and change tracking.
+
+    1. Go to Pipelines
+    1. New Pipeline
+    1. Choose Azure Repos Git
+    1. Select Repository
+    1. Select Existing Azure Pipeline YAML file
+    1. Identify the pipeline in `.pipelines/platform-identity.yml`.
+    1. Save the pipeline (don't run it yet)
+    1. Rename the pipeline to `identity-ci`
+
+1. Create a subscription configuration file (JSON)
+
+    1. Create directory ./config/identity.
+    
+    1. Create subdirectory based on the syntax: `<devops-org-name>-<branch-name>` (i.e. `CanadaPubSecALZ-main` to create path `./config/identity/CanadaPubSecALZ-main/`).
+    
+    1. Make a copy of an existing subscription configuration file under `config/identity/CanadaPubSecALZ-main` as a starting point
+
+    1. Define deployment parameters based on example below.
+        
+        * Set the values for the Azure tags that would be applied to the identity subscription and the Identity resources.
+        * Set resource group names for the Identity resources. 
+        > **Note:** Each resource group is created if the associated resource's Enabled flag is set to `true`.
+
+        * Example deployment parameters file:
+  
+          ```json
+            "subscriptionTags": {
+              "value": {
+                "ISSO": "isso-tbd",
+                "ClientOrganization": "client-organization-tag",
+                "CostCenter": "cost-center-tag",
+                "DataSensitivity": "data-sensitivity-tag",
+                "ProjectContact": "project-contact-tag",
+                "ProjectName": "project-name-tag",
+                "TechnicalContact": "technical-contact-tag"
+              }
+            },
+            "resourceTags": {
+              "value": {
+                "ClientOrganization": "client-organization-tag",
+                "CostCenter": "cost-center-tag",
+                "DataSensitivity": "data-sensitivity-tag",
+                "ProjectContact": "project-contact-tag",
+                "ProjectName": "project-name-tag",
+                "TechnicalContact": "technical-contact-tag"
+              }
+            },
+            "resourceGroups": {
+              "value": {
+                  "automation": "automation",
+                  "networking": "networking",
+                  "networkWatcher": "NetworkWatcherRG",
+                  "backupRecoveryVault": "backup",
+                  "domainControllers": "DomainControllersRG",
+                  "dnsResolver": "dns-resolverRG",
+                  "dnsCondionalForwarders": "dns-CondionalForwardersRG",
+                  "privateDnsZones": "pubsec-dns"
+              }
+            },
+          ```
+        * Configure Azure DNS Private Resolver
+
+          ```json
+            "privateDnsResolver": {
+            "value": {
+              "enabled": true,
+              "name": "dns-resolver",
+              "inboundEndpointName": "dns-resolver-Inbound",
+              "outboundEndpointName": "dns-resolver-Outbound"
+            }
+          },
+
+          "privateDnsResolverRuleset": {
+            "value": {
+              "enabled": true,
+              "name": "dns-resolver-ruleset",
+              "linkRuleSetToVnet": true,
+              "linkRuleSetToVnetName": "dns-resolver-vnet-link",
+              "forwardingRules": [
+                {
+                  "name": "default",
+                  "domain": "dontMakeMeThink.local",
+                  "state": "Enabled",
+                  "targetDnsServers": [
+                    {
+                      "ipAddress": "10.99.99.100"
+                    },
+                    {
+                      "ipAddress": "10.99.99.99"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          ```  
+        * Configure the Identity network & it's peering connection to the hub network
+        > **Note:** If the PrivateDnsResolver Enabled setting is set to `false` the associated DNS Resolver subnets will not be deployed.
+
+          ```json
+          "hubNetwork": {
+            "value": {
+                "virtualNetworkId": "/subscriptions/db8a3c31-7dbb-4368-8883-f9e6333ff23a/resourceGroups/pubsec-hub-networking/providers/Microsoft.Network/virtualNetworks/hub-vnet",
+                "rfc1918IPRange": "10.18.0.0/22",
+                "rfc6598IPRange": "100.60.0.0/16",
+                "egressVirtualApplianceIp": "10.18.1.4"
+            }
+          },
+
+          "network": {
+              "value": {
+                "deployVnet": true,
+                "peerToHubVirtualNetwork": true,
+                "useRemoteGateway": false,
+                "name": "id-vnet",
+                "dnsServers": [
+                  "10.18.1.4"
+                ],
+                "addressPrefixes": [
+                  "10.15.0.0/24"
+                ],
+                "subnets": {
+                  "domainControllers": {
+                    "comments": "Identity Subnet for Domain Controllers and VM-Based DNS Servers",
+                    "name": "DomainControllers",
+                    "addressPrefix": "10.15.0.0/27"
+                  },
+                  "dnsResolverInbound": {
+                    "comments": "Azure DNS Resolver Inbound Requests subnet",
+                    "name": "AzureDNSResolver-Inbound",
+                    "addressPrefix": "10.15.0.32/27"
+                  },
+                  "dnsResolverOutbound": {
+                    "comments": "Azure DNS Resolver Outbound Requests subnet",
+                    "name": "AzureDNSResolver-Outbound",
+                    "addressPrefix": "10.15.0.64/27"
+                  },
+                  "optional": []
+                }
+              }
+            }
+          ```
+
+1. Configure the Azure DevOps pipeline for Identity
+
+    1. In Azrue DevOps, go to Pipelines
+    1. New Pipeline
+        1. Select Existing Azrue Pipline YAML file
+        1. Identify the pipeline in `.pipelines/identity.yml`
+        1. save the pipeline (don't run it yet)
+        1. Rename the pipeline to `identity-ci` 
+
+1. Run pipeline and wait for completion
+
+---
+## Step 9 - Configure Subscription Archetypes
 
 1. Configure Pipeline definition for subscription archetypes
 
@@ -1499,7 +1680,7 @@ In order to configure audit stream for Azure Monitor, identify the following inf
 
     *Review the [README.md under `/config/subscriptions`](../../config/subscriptions/README.md) to create the folder structure required for subscriptions deployments.*
 
-    1. Make a copy of an existing subscription configuration file under `config/subscriptions/CanadaESLZ-main` as a starting point
+    1. Make a copy of an existing subscription configuration file under `config/subscriptions/CanadaPubSecALZ-main` as a starting point
 
     2. Be sure to rename the file in one of the following formats:
        * `[GUID]_[TYPE].json`
@@ -1534,7 +1715,7 @@ In order to configure audit stream for Azure Monitor, identify the following inf
 
 You can migrate to the management group hierarchy implemented in v0.9.0 by populating the hierarchy from your existing Azure environment.  By migrating to the hierarchy, you can take advantage of simplified configuration without modifying Bicep templates.  To generate the hierarchy:
 
-1. Install [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) & [jq](https://stedolan.github.io/jq/download/) on your environment.
+1. Install [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) & [jq](https://stedolan.github.io/jq/download/) on your environment.
 
 2. Login to Azure CLI.
 
@@ -1690,7 +1871,7 @@ As of `v0.10.0`, logging configuration have been migrated to JSON parameters fil
 * Separates Azure DevOps pipeline variables from ARM deployment parameters.
 * Simplifies support for multiple Log Analytics Workspaces in an Azure tenant (i.e. LAWs deployed by region or workload)
 
-We added a new parameter to `common.yml` to set the folder for logging configuration.  This folder is used by Azure DevOps Pipelines to create a fully qualified file path for logging configuration.  A fully qualified path will have the following structure: `<loggingPathFromRoot>`/`<devops-org-name>-<branch-name>`/`logging.parameters.json`.  For example:  `config/logging/CanadaESLZ-main/logging.parameters.json`
+We added a new parameter to `common.yml` to set the folder for logging configuration.  This folder is used by Azure DevOps Pipelines to create a fully qualified file path for logging configuration.  A fully qualified path will have the following structure: `<loggingPathFromRoot>`/`<devops-org-name>-<branch-name>`/`logging.parameters.json`.  For example:  `config/logging/CanadaPubSecALZ-main/logging.parameters.json`
 
 ```yaml
   loggingPathFromRoot: 'config/logging'
@@ -1699,8 +1880,8 @@ We added a new parameter to `common.yml` to set the folder for logging configura
 Migration process:
 
 1. Create directory `./config/logging`.
-2. Create subdirectory based on the syntax: `<devops-org-name>-<branch-name>` (i.e. `CanadaESLZ-main` to create path `./config/logging/CanadaESLZ-main/`).
-3. Create JSON parameters file with name `logging.parameters.json` (any name can be used) in the directory (i.e. `./config/logging/CanadaESLZ-main/logging.parameters.json`).
+2. Create subdirectory based on the syntax: `<devops-org-name>-<branch-name>` (i.e. `CanadaPubSecALZ-main` to create path `./config/logging/CanadaPubSecALZ-main/`).
+3. Create JSON parameters file with name `logging.parameters.json` (any name can be used) in the directory (i.e. `./config/logging/CanadaPubSecALZ-main/logging.parameters.json`).
 4. Define deployment parameters based on example below.
 
     **Template to use for logging.parameters.json**
@@ -1844,7 +2025,7 @@ As of `v0.10.0`, hub networking configuration have been migrated to JSON paramet
 * Separates Azure DevOps pipeline variables from ARM deployment parameters.
 * Simplifies support for multiple Hub Networks in an Azure tenant (i.e. Hub Network deployed by region)
 
-We added a new parameter to `common.yml` to set the folder for networking configuration.  This folder is used by Azure DevOps Pipelines to create a fully qualified file path for networking configuration.  A fully qualified path will have the following structure: `<networkPathFromRoot>`/`<devops-org-name>-<branch-name>`/`hub-capability`/`hub-network.parameters.json`.  For example:  `config/networking/CanadaESLZ-main/hub-azfw/hub-network.parameters.json`
+We added a new parameter to `common.yml` to set the folder for networking configuration.  This folder is used by Azure DevOps Pipelines to create a fully qualified file path for networking configuration.  A fully qualified path will have the following structure: `<networkPathFromRoot>`/`<devops-org-name>-<branch-name>`/`hub-capability`/`hub-network.parameters.json`.  For example:  `config/networking/CanadaPubSecALZ-main/hub-azfw/hub-network.parameters.json`
 
 ```yaml
   networkPathFromRoot: 'config/networking'
@@ -1853,11 +2034,11 @@ We added a new parameter to `common.yml` to set the folder for networking config
 Migration process:
 
 1. Create directory `./config/networking`.
-2. Create subdirectory based on the syntax: `<devops-org-name>-<branch-name>` (i.e. `CanadaESLZ-main` to create path `./config/networking/CanadaESLZ-main/`).
+2. Create subdirectory based on the syntax: `<devops-org-name>-<branch-name>` (i.e. `CanadaPubSecALZ-main` to create path `./config/networking/CanadaPubSecALZ-main/`).
 3. When using Hub Networking with Azure Firewall
 
-    1. Create subdirectory: `hub-azfw-policy` (i.e. `./config/networking/CanadaESLZ-main/hub-azfw-policy`)
-    1. Create JSON parameters file with name `azure-firewall-policy.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaESLZ-main/hub-azfw-policy/azure-firewall-policy.parameters.json`).
+    1. Create subdirectory: `hub-azfw-policy` (i.e. `./config/networking/CanadaPubSecALZ-main/hub-azfw-policy`)
+    1. Create JSON parameters file with name `azure-firewall-policy.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaPubSecALZ-main/hub-azfw-policy/azure-firewall-policy.parameters.json`).
     1. Define deployment parameters based on example below.
 
         **Template to use for azure-firewall-policy.parameters.json**
@@ -1880,8 +2061,8 @@ Migration process:
         }
         ```
 
-    1. Create subdirectory: `hub-azfw` (i.e. `./config/networking/CanadaESLZ-main/hub-azfw`)
-    1. Create JSON parameters file with name `hub-network.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaESLZ-main/hub-azfw/hub-network.json`).
+    1. Create subdirectory: `hub-azfw` (i.e. `./config/networking/CanadaPubSecALZ-main/hub-azfw`)
+    1. Create JSON parameters file with name `hub-network.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaPubSecALZ-main/hub-azfw/hub-network.json`).
     1. Define deployment parameters based on example below.
 
         **Template to use for hub-network.parameters.json**
@@ -2066,8 +2247,8 @@ Migration process:
 
 4. When using Hub Networking with Network Virtual Appliance
 
-    1. Create subdirectory: `hub-nva` (i.e. `./config/networking/CanadaESLZ-main/hub-nva`)
-    1. Create JSON parameters file with name `hub-network.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaESLZ-main/hub-nva/hub-network.parameters.json`).
+    1. Create subdirectory: `hub-nva` (i.e. `./config/networking/CanadaPubSecALZ-main/hub-nva`)
+    1. Create JSON parameters file with name `hub-network.parameters.json` (any name can be used) in the directory (i.e. `./config/networking/CanadaPubSecALZ-main/hub-nva/hub-network.parameters.json`).
     1. Define deployment parameters based on example below.
 
         **Template to use for hub-network.parameters.json**

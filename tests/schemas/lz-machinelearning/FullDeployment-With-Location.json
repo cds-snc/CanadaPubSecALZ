@@ -13,8 +13,13 @@
           "receivers": {
               "app": [ "alzcanadapubsec@microsoft.com" ],
               "email": [ "alzcanadapubsec@microsoft.com" ],
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/AppServiceLinuxContainerPrivateEndpointIsFalse.json
               "sms": [ { "countryCode": "1", "phoneNumber": "5555555555" } ],
               "voice": [ { "countryCode": "1", "phoneNumber": "5555555555" } ]
+========
+              "sms": [ { "countryCode": "1", "phoneNumber": "6045555555" } ],
+              "voice": [ { "countryCode": "1", "phoneNumber": "6045555555" } ]
+>>>>>>>> upstream/main:tests/schemas/lz-machinelearning/FullDeployment-With-Location.json
           },
           "actionGroupName": "Service health action group",
           "actionGroupShortName": "health-alert",
@@ -25,7 +30,7 @@
     "securityCenter": {
       "value": {
         "email": "alzcanadapubsec@microsoft.com",
-        "phone": "5555555555"
+        "phone": "6045555555"
       }
     },
     "subscriptionRoleAssignments": {
@@ -101,11 +106,17 @@
     },
     "aks": {
       "value": {
-        "version": "1.22.6",
+        "version": "1.21.2",
         "enabled": true,
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/AppServiceLinuxContainerPrivateEndpointIsFalse.json
+        "networkPlugin": "azure",
+        "networkPolicy": "azure",
+        "podCidr": "",
+========
         "networkPlugin": "kubenet",
         "networkPolicy": "calico",
         "podCidr": "11.0.0.0/16",
+>>>>>>>> upstream/main:tests/schemas/lz-machinelearning/FullDeployment-With-Location.json
         "serviceCidr": "20.0.0.0/16",
         "dnsServiceIP": "20.0.0.10",
         "dockerBridgeCidr": "30.0.0.1/16"
@@ -116,13 +127,22 @@
         "enabled": true,
         "skuName": "P1V2",
         "skuTier": "Premium",
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/AppServiceLinuxContainerPrivateEndpointIsFalse.json
+        "enablePrivateEndpoint": false
+========
         "enablePrivateEndpoint": true
+>>>>>>>> upstream/main:tests/schemas/lz-machinelearning/FullDeployment-With-Location.json
       }
     },
     "sqldb": {
       "value": {
         "enabled": true,
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/AppServiceLinuxContainerPrivateEndpointIsFalse.json
+        "sqlAuthenticationUsername": "azadmin",
+        "aadAuthenticationOnly": false,
+========
         "aadAuthenticationOnly": true,
+>>>>>>>> upstream/main:tests/schemas/lz-machinelearning/FullDeployment-With-Location.json
         "aadLoginName": "DBA Group",
         "aadLoginObjectID": "4e4ea47c-ee21-4add-ad2f-a75d0d8014e0",
         "aadLoginType": "Group"

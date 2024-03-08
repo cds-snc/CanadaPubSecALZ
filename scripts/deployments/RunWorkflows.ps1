@@ -61,6 +61,9 @@ OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
   .PARAMETER DeployHubNetworkWithNVA
     If true, run the NVA hub network workflow.
+  
+  .PARAMETER DeployIdentity
+    If true, run the Identity workflow.
 
   .PARAMETER DeploySubscriptionIds
     Comma separated list of quoted subscription ids to run the subscription workflow against.
@@ -91,42 +94,42 @@ OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
     The firewall password to use for the Hub Network with NVA workflow.
 
   .EXAMPLE
-    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaESLZ-main -LoginInteractiveTenantId '8188040d-6c67-4c5c-b112-36a304b66dad' -DeployManagementGroups
+    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaPubSecALZ-main -LoginInteractiveTenantId '8188040d-6c67-4c5c-b112-36a304b66dad' -DeployManagementGroups
 
     Deploy management groups interactively.
 
   .EXAMPLE
-    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaESLZ-main -LoginInteractiveTenantId '8188040d-6c67-4c5c-b112-36a304b66dad' -DeployManagementGroups -DeployRoles -DeployLogging -DeployCustomPolicyDefinitions -DeployCustomPolicySetDefinitions -DeployCustomPolicySetAssignments -DeployBuiltinPolicySetAssignments -DeployAzureFirewallPolicy -DeployHubNetworkWithAzureFirewall
+    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaPubSecALZ-main -LoginInteractiveTenantId '8188040d-6c67-4c5c-b112-36a304b66dad' -DeployManagementGroups -DeployRoles -DeployLogging -DeployCustomPolicyDefinitions -DeployCustomPolicySetDefinitions -DeployCustomPolicySetAssignments -DeployBuiltinPolicySetAssignments -DeployAzureFirewallPolicy -DeployHubNetworkWithAzureFirewall
 
     Deploy all platform components interactively, with Azure Firewall.
 
   .EXAMPLE
-    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaESLZ-main -LoginInteractiveTenantId '8188040d-6c67-4c5c-b112-36a304b66dad' -DeploySubscriptionIds 'a188040e-6c67-4c5c-b112-36a304b66dad,7188030d-6c67-4c5c-b112-36a304b66dac'
+    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaPubSecALZ-main -LoginInteractiveTenantId '8188040d-6c67-4c5c-b112-36a304b66dad' -DeploySubscriptionIds 'a188040e-6c67-4c5c-b112-36a304b66dad,7188030d-6c67-4c5c-b112-36a304b66dac'
 
     Deploy 2 subscriptions interactively.
 
   .EXAMPLE
-    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaESLZ-main -DeployCustomPolicyDefinitions -DeployCustomPolicySetDefinitions -DeployCustomPolicySetAssignments -DeployBuiltinPolicySetAssignments
+    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaPubSecALZ-main -DeployCustomPolicyDefinitions -DeployCustomPolicySetDefinitions -DeployCustomPolicySetAssignments -DeployBuiltinPolicySetAssignments
 
     Deploy Built-In & Custom Policy Sets, including all default custom policy/policy set definitions.
   
   .EXAMPLE
-    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaESLZ-main -DeployCustomPolicyDefinitions
+    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaPubSecALZ-main -DeployCustomPolicyDefinitions
 
     Deploy Custom Policy Definitions only.
 
   .EXAMPLE
-    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaESLZ-main -DeployCustomPolicySetAssignments -CustomPolicySetAssignmentManagementGroupId pubsec -CustomPolicySetAssignmentNames DefenderForCloud
+    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaPubSecALZ-main -DeployCustomPolicySetAssignments -CustomPolicySetAssignmentManagementGroupId pubsec -CustomPolicySetAssignmentNames DefenderForCloud
 
     Deploy one Custom Policy Set Assignment at management group
   
   .EXAMPLE
-    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaESLZ-main -DeployBuiltinPolicySetAssignments
+    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaPubSecALZ-main -DeployBuiltinPolicySetAssignments
 
     Deploy Built In Policy Assignments
 
   .EXAMPLE
-    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaESLZ-main -DeployBuiltinPolicySetAssignments -BuiltinPolicySetAssignmentManagementGroupId pubsec -BuiltinPolicySetAssignmentNames asb
+    PS> .\RunWorkflows.ps1 -EnvironmentName CanadaPubSecALZ-main -DeployBuiltinPolicySetAssignments -BuiltinPolicySetAssignmentManagementGroupId pubsec -BuiltinPolicySetAssignmentNames asb
 
     Deploy one Built In Policy Assignment at management group
 
@@ -173,6 +176,8 @@ Param(
   [switch]$DeployHubNetworkWithNVA,
   [switch]$DeployHubNetworkWithAzureFirewall,
 
+  [switch]$DeployIdentity,
+
   [string[]]$DeploySubscriptionIds=@(),
 
   # How to deploy
@@ -185,8 +190,6 @@ Param(
   [SecureString]$NvaUsername=$null,
   [SecureString]$NvaPassword=$null
 )
-
-#Requires -Modules Az, powershell-yaml
 
 $ErrorActionPreference = "Stop"
 
@@ -220,6 +223,7 @@ Write-Host "Loading functions..."
 . ".\Functions\Policy.ps1"
 . ".\Functions\HubNetworkWithNVA.ps1"
 . ".\Functions\HubNetworkWithAzureFirewall.ps1"
+. ".\Functions\Identity.ps1"
 . ".\Functions\Subscriptions.ps1"
 
 # Az Login interactively
@@ -390,6 +394,24 @@ if ($DeployHubNetworkWithAzureFirewall) {
     -SubscriptionId $Context.Variables['var-hubnetwork-subscriptionId'] `
     -ConfigurationFilePath "$($Context.NetworkingDirectory)/$($Context.Variables['var-hubnetwork-azfw-configurationFileName'])" `
     -AzureFirewallPolicyResourceId $AzureFirewallPolicyConfiguration.AzureFirewallPolicyResourceId `
+    -LogAnalyticsWorkspaceResourceId $LoggingConfiguration.LogAnalyticsWorkspaceResourceId
+}
+
+# Deploy Identity Subscription
+if ($DeployIdentity) {
+  Write-Host "Deploying Identity Subscription..."
+  # Get Logging information using logging config file
+  $LoggingConfiguration = Get-LoggingConfiguration `
+    -ConfigurationFilePath "$($Context.LoggingDirectory)/$($Context.Variables['var-logging-configurationFileName'])" `
+    -SubscriptionId $Context.Variables['var-logging-subscriptionId']
+  
+  #Create Identity Subscription
+  Set-Identity `
+    -Context $Context `
+    -Region $Context.Variables['var-identity-region'] `
+    -ManagementGroupId $Context.Variables['var-identity-managementGroupId'] `
+    -SubscriptionId $Context.Variables['var-identity-subscriptionId'] `
+    -ConfigurationFilePath "$($Context.IdentityDirectory)/$($Context.Variables['var-identity-configurationFileName'])" `
     -LogAnalyticsWorkspaceResourceId $LoggingConfiguration.LogAnalyticsWorkspaceResourceId
 }
 

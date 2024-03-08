@@ -38,7 +38,7 @@ var scope = tenantResourceId('Microsoft.Management/managementGroups', policyAssi
 var policyScopedId = resourceId('Microsoft.Authorization/policySetDefinitions', policyId)
 
 // Telemetry - Azure customer usage attribution
-// Reference:  https://docs.microsoft.com/azure/marketplace/azure-partner-customer-usage-attribution
+// Reference:  https://learn.microsoft.com/azure/marketplace/azure-partner-customer-usage-attribution
 var telemetry = json(loadTextContent('../../../config/telemetry.json'))
 module telemetryCustomerUsageAttribution '../../../azresources/telemetry/customer-usage-attribution-management-group.bicep' = if (telemetry.customerUsageAttribution.enabled) {
   name: 'pid-${telemetry.customerUsageAttribution.modules.policy}-pbmm'
@@ -84,7 +84,7 @@ resource policySetAssignment 'Microsoft.Authorization/policyAssignments@2020-03-
           'Microsoft.DataFactory/factories'
           'Microsoft.DataLakeAnalytics/accounts'
           'Microsoft.DataLakeStore/accounts'
-          'Microsoft.EventGrid/eventSubscriptions'
+          // 'Microsoft.EventGrid/eventSubscriptions' # Removed since it doesn't have any logs
           'Microsoft.EventGrid/topics'
           'Microsoft.EventHub/namespaces'
           'Microsoft.Network/expressRouteCircuits'
@@ -132,7 +132,7 @@ resource policySetRoleAssignmentContributor 'Microsoft.Authorization/roleAssignm
   name: guid(policyAssignmentManagementGroupId, 'pbmm-Contributor')
   scope: managementGroup()
   properties: {
-    roleDefinitionId: '/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c'
+    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions','b24988ac-6180-42a0-ab88-20f7382dd24c')
     principalId: policySetAssignment.identity.principalId
     principalType: 'ServicePrincipal'
   }
