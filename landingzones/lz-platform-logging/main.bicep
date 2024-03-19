@@ -189,9 +189,6 @@ param logAnalyticsAutomationAccountName string
 @description('Log Analytics Workspace Data Retention in days.')
 param logAnalyticsRetentionInDays int
 
-@description('Data Collection Rule configuration.')
-param dataCollectionRule object
-
 @description('Flag to determine whether delete lock should be created on resource group(s).  Default:  true')
 param enableDeleteLockOnResourceGroup bool = true
 

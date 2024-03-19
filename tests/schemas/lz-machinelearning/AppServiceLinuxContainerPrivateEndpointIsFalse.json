@@ -71,6 +71,7 @@
     },
     "resourceGroups": {
       "value": {
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/AppServiceLinuxContainerPrivateEndpointIsFalse.json
         "automation": "azml-automation",
         "compute": "azml-compute",
         "monitor": "azml-monitor",
@@ -78,6 +79,15 @@
         "networkWatcher": "NetworkWatcherRG",
         "security": "azml-security",
         "storage": "azml-storage"
+========
+        "automation": "azmlcmk-automation",
+        "compute": "azmlcmk-compute",
+        "monitor": "azmlcmk-monitor",
+        "networking": "azmlcmk-networking",
+        "networkWatcher": "NetworkWatcherRG",
+        "security": "azmlcmk-security",
+        "storage": "azmlcmk-storage"
+>>>>>>>> 8fc587a6bf2e53e516ded633d96c652874ab5875:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
       }
     },
     "useCMK": {
@@ -95,11 +105,17 @@
     },
     "aks": {
       "value": {
-        "version": "1.21.2",
+        "version": "1.22.6",
         "enabled": true,
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/AppServiceLinuxContainerPrivateEndpointIsFalse.json
         "networkPlugin": "azure",
         "networkPolicy": "azure",
         "podCidr": "",
+========
+        "networkPlugin": "kubenet",
+        "networkPolicy": "calico",
+        "podCidr": "11.0.0.0/16",
+>>>>>>>> 8fc587a6bf2e53e516ded633d96c652874ab5875:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
         "serviceCidr": "20.0.0.0/16",
         "dnsServiceIP": "20.0.0.10",
         "dockerBridgeCidr": "30.0.0.1/16"
@@ -110,17 +126,25 @@
         "enabled": true,
         "skuName": "P1V2",
         "skuTier": "Premium",
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/AppServiceLinuxContainerPrivateEndpointIsFalse.json
         "enablePrivateEndpoint": false
+========
+        "enablePrivateEndpoint": true
+>>>>>>>> 8fc587a6bf2e53e516ded633d96c652874ab5875:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
       }
     },
     "sqldb": {
       "value": {
         "enabled": true,
         "sqlAuthenticationUsername": "azadmin",
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/AppServiceLinuxContainerPrivateEndpointIsFalse.json
         "aadAuthenticationOnly": false,
         "aadLoginName": "DBA Group",
         "aadLoginObjectID": "4e4ea47c-ee21-4add-ad2f-a75d0d8014e0",
         "aadLoginType": "Group"
+========
+        "aadAuthenticationOnly": false
+>>>>>>>> 8fc587a6bf2e53e516ded633d96c652874ab5875:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
       }
     },
     "sqlmi": {
@@ -149,7 +173,11 @@
       "value": {
         "peerToHubVirtualNetwork": true,
         "useRemoteGateway": false,
+<<<<<<<< HEAD:tests/schemas/lz-machinelearning/AppServiceLinuxContainerPrivateEndpointIsFalse.json
         "name": "azml-vnet",
+========
+        "name": "azmlcmk-vnet",
+>>>>>>>> 8fc587a6bf2e53e516ded633d96c652874ab5875:config/subscriptions/CanadaESLZ-main/pubsec/LandingZones/DevTest/ec6c5689-db04-4f1e-b76d-834a51dd0e27_machinelearning_canadacentral.json
         "dnsServers": [
           "10.18.1.4"
         ],

@@ -36,7 +36,7 @@ resource tagsInheritedFromSubscriptionToResourceGroupPolicy 'Microsoft.Authoriza
   name: toLower(replace('tags-inherited-from-sub-to-rg-${tag}', ' ', '-'))
   properties: {
     metadata: {
-      tag: tag
+      'tag': tag
     }
     displayName: '${tagsInheritedFromSubscriptionToResourceGroupPolicyTemplate.properties.displayName}: ${tag}'
     mode: tagsInheritedFromSubscriptionToResourceGroupPolicyTemplate.properties.mode

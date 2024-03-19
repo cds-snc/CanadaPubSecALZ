@@ -1284,27 +1284,6 @@ resource policyset_name 'Microsoft.Authorization/policySetDefinitions@2020-03-01
           }
         }
       }
-      {
-        groupNames: [
-          'CUSTOM'
-        ]
-        policyDefinitionId: extensionResourceId(customPolicyDefinitionMgScope, 'Microsoft.Authorization/policyDefinitions', 'LA-Microsoft.EventHub-namespaces')
-        policyDefinitionReferenceId: toLower(replace('Deploy Diagnostic Settings for Event Hub to Log Analytics workspace', ' ', '-'))
-        parameters: {
-          logAnalytics: {
-            value: '[parameters(\'logAnalytics\')]'
-          }
-          profileName: {
-            value: 'setbypolicy_logAnalytics'
-          }
-          azureRegions: {
-            value: [
-              'canadacentral'
-              'canadaeast'
-            ]
-          }
-        }
-      }
     ]
   }
 }
