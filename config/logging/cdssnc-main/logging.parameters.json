@@ -26,7 +26,15 @@
       }
     },
     "subscriptionRoleAssignments": {
-      "value": []
+      "value": [
+        {
+          "comments": "Built-in Contributor Role",
+          "roleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c",
+          "securityGroupObjectIds": [
+            "38f33f7e-a471-4630-8ce9-c6653495a2ee"
+          ]
+        }
+      ]
     },
     "subscriptionBudget": {
       "value": {
@@ -59,62 +67,6 @@
     },
     "logAnalyticsAutomationAccountName": {
       "value": "automation-account-prod"
-    },
-    "dataCollectionRule": {
-      "value": {
-        "enabled": true,
-        "name": "DCR-AzureMonitorLogs",
-        "windowsEventLogs": [
-          {
-              "streams": [
-                  "Microsoft-Event"
-              ],
-              "xPathQueries": [
-                  "Application!*[System[(Level=1 or Level=2 or Level=3)]]",
-                  "Security!*[System[(band(Keywords,13510798882111488))]]",
-                  "System!*[System[(Level=1 or Level=2 or Level=3)]]"
-              ],
-              "name": "eventLogsDataSource"
-          }
-        ],
-        "syslog": [
-          {
-              "streams": [
-                  "Microsoft-Syslog"
-              ],
-              "facilityNames": [
-                  "auth",
-                  "authpriv",
-                  "cron",
-                  "daemon",
-                  "mark",
-                  "kern",
-                  "local0",
-                  "local1",
-                  "local2",
-                  "local3",
-                  "local4",
-                  "local5",
-                  "local6",
-                  "local7",
-                  "lpr",
-                  "mail",
-                  "news",
-                  "syslog",
-                  "user",
-                  "uucp"
-              ],
-              "logLevels": [
-                  "Warning",
-                  "Error",
-                  "Critical",
-                  "Alert",
-                  "Emergency"
-              ],
-              "name": "sysLogsDataSource"
-          }
-        ]
-      }
     }
   }
 }
