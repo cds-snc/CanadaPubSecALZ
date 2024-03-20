@@ -54,7 +54,7 @@ resource bastion 'Microsoft.Network/bastionHosts@2021-03-01' = {
   }
   properties: {
       dnsName: uniqueString(resourceGroup().id)
-      scaleUnits: sku == 'Standard' ? scaleUnits : json('null')
+      scaleUnits: sku == 'Standard' ? scaleUnits : null
       ipConfigurations: [
           {
               name: 'IpConf'

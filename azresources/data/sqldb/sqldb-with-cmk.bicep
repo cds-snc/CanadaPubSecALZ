@@ -74,9 +74,9 @@ resource sqlserver 'Microsoft.Sql/servers@2021-02-01-preview' = {
     type: 'SystemAssigned'
   }
   properties: {
-    administratorLogin: aadAdministrator.azureADOnlyAuthentication? json('null') : sqlAuthenticationUsername 
-    administratorLoginPassword: aadAdministrator.azureADOnlyAuthentication? json('null') : sqlAuthenticationPassword
-    administrators: empty(aadAdministrator.sid)? json('null') : aadAdministrator
+    administratorLogin: aadAdministrator.azureADOnlyAuthentication? null : sqlAuthenticationUsername 
+    administratorLoginPassword: aadAdministrator.azureADOnlyAuthentication? null : sqlAuthenticationPassword
+    administrators: empty(aadAdministrator.sid)? null : aadAdministrator
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Disabled'
   }
