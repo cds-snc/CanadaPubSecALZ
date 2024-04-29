@@ -6,7 +6,7 @@ variables:
   var-hubnetwork-subscriptionId: 4fd845de-f6c8-4e6d-9a87-c21c4ebf7edd
   var-hubnetwork-azfwPolicy-configurationFileName: hub-azfw-policy/azure-firewall-policy.parameters.json
   var-logging-managementGroupId: Management
-  var-logging-subscriptionId: f27b081a-aa54-4ab4-9f26-a4c5375dc8fa
+  var-logging-subscriptionId: 707f2266-324c-47d8-809f-07801f4b425a
   deploymentRegion: canadacentral
   var-identity-managementGroupId: Identity
   var-logging-diagnosticSettingsforNetworkSecurityGroupsStoragePrefix: pubsecnsg
