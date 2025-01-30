@@ -2,8 +2,8 @@ name: Consistency Check
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *'  # every day at midnight
+  # schedule:
+  #   - cron: '0 0 * * *'  # every day at midnight
 
 env:
   SCHEMA_FOLDER: schemas/latest/landingzones
