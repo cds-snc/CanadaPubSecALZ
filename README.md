@@ -1,5 +1,8 @@
 # Azure Landing Zones for Canadian Public Sector
 
+> [!NOTE]
+> This repository has been archived. Please see https://github.com/cds-snc/cds-azure-lz for the latest version.
+
 ## Introduction
 
 The purpose of the reference implementation is to guide Canadian Public Sector customers on building Landing Zones in their Azure environment.  The reference implementation is based on [Cloud Adoption Framework for Azure](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/) and provides an opinionated implementation that enables ITSG-33 regulatory compliance by using [NIST SP 800-53 Rev. 4](https://learn.microsoft.com/azure/governance/policy/samples/nist-sp-800-53-r4) and [Canada Federal PBMM](https://learn.microsoft.com/azure/governance/policy/samples/canada-federal-pbmm) Regulatory Compliance Policy Sets.
